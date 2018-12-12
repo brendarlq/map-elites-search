@@ -1,2 +1,2 @@
-# map-elites-search
-Map-Elites-Search
+# map-elites-java
+MAP-Elites for feature selection

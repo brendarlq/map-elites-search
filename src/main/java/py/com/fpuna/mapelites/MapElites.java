@@ -1,0 +1,150 @@
+package py.com.fpuna.mapelites;
+
+import java.util.Random;
+
+public class MapElites {
+
+  private Mapa mapa;
+  private Random random;
+
+  /**
+   * Método principal del algoritmo Map Elites
+   */
+  public Mapa execute(Mapa mapa, Integer iteraciones) {
+
+    this.mapa = mapa;
+
+    //TODO: Como determinar el número de genomas iniciales?
+    Integer numberGenomes = mapa.getCells().length * 3;
+
+    for (int i = 0; i < iteraciones; i++) {
+
+      //Change de seed in each iteration
+      this.random = new Random(System.currentTimeMillis());
+
+      if (i < numberGenomes) {
+
+        //cargamos el mapa con una cantidad de genomas iniciales;
+        generateRandomSolution();
+      } else {
+
+        //seleccionamos una celda aleatoriamente
+        Cell selectedCell = selectionRandom();
+
+        //realizamos la mutación del vector de features
+        int[] child = variationRandom(selectedCell);
+
+        //ejecutamos el clasificador para obtener el fitness de la solución
+        double fitness = executeClassifier(child);
+
+        //almacenamos en el mapa si corresponde
+        cellMapping(child, fitness);
+      }
+    }
+
+    return this.mapa;
+
+  }
+
+
+  /**
+   * Selecciona una celda al azar para realizar la mutación.
+   */
+  private Cell selectionRandom() {
+    Integer cellId = random.nextInt(mapa.getCells().length);
+    return mapa.getCells()[cellId];
+  }
+
+  //TODO: Hacer random por celda?
+
+  /**
+   * Genera una solución randomica, calcula el fitness y guarda en el mapa.
+   */
+  private void generateRandomSolution() {
+    //creamos un vector vacío
+    int[] features = new int[mapa.getNumberFeatures()];
+
+    //completamos con 0 o 1 aleatoriamente.
+    for (int i = 0; i < mapa.getNumberFeatures(); i++) {
+      features[i] = random.nextInt(2);
+    }
+
+    //ejecutamos el clasificador para calcular el fitness
+    double fitness = executeClassifier(features);
+
+    //almacenamos en el mapa si corresponde
+    cellMapping(features, fitness);
+
+  }
+
+  /**
+   * Simula la ejecución del clasficador, caja negra.
+   */
+  private double executeClassifier(int[] features) {
+    return random.nextInt(101);
+  }
+
+  /**
+   * Reliza el mapeo de la solución a una celda del mapa.
+   */
+  private void cellMapping(int[] features, double fitness) {
+
+    //obtenemos el key para buscar en el mapa
+    String key = getKey(features);
+
+    //buscamos la celda que concuerda con el key
+    Integer cellId = getMappingCell(key);
+
+    //si la celda esta vacía o el fitness calculado es mayor, almacenamos en la celda
+    if (mapa.getCells()[cellId].isEmpty() ||
+        (!mapa.getCells()[cellId].isEmpty() && mapa.getCells()[cellId].getAccuracy() < fitness)) {
+      mapa.getCells()[cellId].setAccuracy(fitness);
+      mapa.getCells()[cellId].setFeatures(features);
+      mapa.getCells()[cellId].setEmpty(false);
+    }
+  }
+
+  /**
+   * Obtiene la celda que coincide con el key de la solución.
+   */
+  private Integer getMappingCell(String key) {
+    Integer cellId = 0;
+    for (Integer i = 0; i < mapa.getCells().length; i++) {
+      if (mapa.getCells()[i].getKey().equals(key)) {
+        cellId = i;
+        break;
+      }
+    }
+    return cellId;
+  }
+
+  /**
+   * Calcula el key para una nueva solución.
+   */
+  private String getKey(int[] features) {
+    String key = "";
+    for (int j = 0; j < mapa.getNumberBitsKey(); j++) {
+      key += features[j];
+    }
+    return key;
+  }
+
+  //TODO: Como realizar la mutación?
+
+  /**
+   * Realiza la mutación del la celda seleccionada.
+   */
+  private int[] variationRandom(Cell selectedCell) {
+    int[] features = new int[selectedCell.getFeatures().length];
+    for (int i = 0; i < selectedCell.getFeatures().length; i++) {
+      features[i] = selectedCell.getFeatures()[i];
+    }
+    int featureId = random.nextInt(mapa.getNumberFeatures());
+    if (features[featureId] == 0) {
+      features[featureId] = 1;
+    } else {
+      features[featureId] = 0;
+    }
+    return features;
+  }
+}
