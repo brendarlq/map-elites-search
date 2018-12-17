@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>py.com.fpuna</groupId>
-    <artifactId>map-elites-java</artifactId>
+    <groupId>map-elites</groupId>
+    <artifactId>map-elites-search</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <build>
         <plugins>
@@ -22,7 +22,7 @@
     <packaging>jar</packaging>
 
     <name>map-elites</name>
-    <description>Map Elites Java</description>
+    <description>Map Elites Search</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
